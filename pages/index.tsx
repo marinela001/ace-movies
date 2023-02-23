@@ -1,14 +1,17 @@
-import type { NextPage } from 'next'
+import { getProducts, Product } from '@stripe/firestore-stripe-payments'
 import Head from 'next/head'
-import Image from 'next/image'
 import { useRecoilValue } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import Banner from '../components/Banner'
 import Header from '../components/Header'
 import Modal from '../components/Modal'
+import Plans from '../components/Plans'
 import Row from '../components/Row'
+import useAuth from '../hooks/useAuth'
 import { Movie } from '../typing'
 import requests from '../utils/requests'
+import payments from '../lib/stripe'
+import useSubscription from '../hooks/useSubscrption'
 interface Props {
 netflixOriginals : Movie[]
 trendingNow : Movie[]
@@ -18,6 +21,7 @@ comedyMovies : Movie[]
 horrorMovies : Movie[]
 romanceMovies : Movie[]
 documentaries : Movie[]
+products:Product[]
 
 }
 const Home = ({netflixOriginals,
@@ -27,9 +31,20 @@ const Home = ({netflixOriginals,
   comedyMovies,
   horrorMovies,
   romanceMovies,
-  documentaries,}:Props) => {
+  documentaries,
+products
+}:Props) => {
 
+console.log({products})
     const showModal = useRecoilValue(modalState)
+
+    const {loading} = useAuth();
+    const {user} = useAuth();
+   const subscription = useSubscription(user);
+  if (loading || subscription === null) return null
+
+  if (!subscription) return <Plans products={products} />
+
   
   return (
     <div className={`relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh] ${
@@ -74,7 +89,13 @@ const Home = ({netflixOriginals,
 export default Home
 
 export const getServerSideProps = async () => {
- 
+  const products = await getProducts(payments, {
+    includePrices: true,
+    activeOnly: true,
+  })
+    .then((res) => res)
+    .catch((error) => console.log(error.message))
+
     const [
     netflixOriginals,
     trendingNow,
@@ -104,5 +125,6 @@ export const getServerSideProps = async () => {
       horrorMovies: horrorMovies.results,
       romanceMovies: romanceMovies.results,
       documentaries: documentaries.results,
+      products
     },
   }}

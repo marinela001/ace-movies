@@ -30,18 +30,17 @@ const onSubmit: SubmitHandler<Inputs> = async (data) => {
   return (
     <div className='relative flex  flex-col h-screen w-screen bg-black md:items-center md:bg-transparent'>
       <Head>
-        <title>Netflix</title>
-       <Image
-       layout="fill"
-       objectFit='cover'
+        <title>Netflix</title></Head>
+        <Image
         src="https://rb.gy/p2hphi"
-        className="-z-10 !hidden opacity-60 sm:!inline "
-        alt=""
-      /></Head>
-
-        <img
+        layout="fill"
+        className="-z-10 !hidden opacity-60 sm:!inline"
+        objectFit="cover"
+        alt=''
+      />
+      <img
         src="https://rb.gy/ulxxee"
-        className="absolute left-4  top-4 cursor-pointer object-contain md:left-10 md:top-6"
+        className="absolute left-4 top-4 cursor-pointer object-contain md:left-10 md:top-6"
         width={150}
         height={150}
       />
